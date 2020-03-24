@@ -1,0 +1,218 @@
+\subsection{Desafíos para el procesamiento de consultas}
+\begin{frame}
+\frametitle{Desafíos para el procesamiento de consultas en el modelo}
+\begin{itemize}
+\item Requerimientos de memoria no acotados.
+\item Respuestas aproximadas a Consultas.
+\item Operaciones Bloqueantes.
+\item Referencias a datos pasados.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Requerimientos de Memoria no acotados}
+\begin{itemize}
+\item El flujo de datos no está acotado en tamaño.
+\item Se requiere respuestas a las consultas en tiempo real, por lo cual se desea un tiempo de cómputo bajo.
+\item Se necesitan algoritmos que minimicen el acceso a disco y puedan operar completamente en memoria física.
+\item Los algoritmos existentes no son lo suficientemente eficientes para satisfacer estas condiciones.
+\item Es un problema abierto si se quiere obtener una solución exacta.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Respuestas aproximadas a Consultas}
+\begin{itemize}
+\item Las limitaciones de memoria y las restricciones temporales imposibilitan el desarrollo de algoritmos que provean soluciones exactas a las consultas.
+\item Suelen aceptarse soluciones aproximadas. Para ello se utilizan diversas técnicas (cada una con su propia definición de aproximación):
+\begin{itemize}
+\item Sketch
+\item Sampling aleatorio
+\item Histogramas
+\item Wavelets
+\item Ventanas Deslizantes
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Aproximación - Ventanas Deslizantes}
+\begin{itemize}
+\item Consiste en evaluar una consulta no sobre la totalidad de los datos obtenidos del flujo sino sobre una ventana temporal de datos correspondiente con aquellos recientes.
+\item Está bien definida y tiene una semántica de aproximación clara: el usuario es consciente de lo que se está dejando de lado al producir una respuesta.
+\item Es determinística.
+\item Enfatiza los datos recientes, que suelen ser los más importantes en las consultas de este modelo.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Aproximación - Ventanas Deslizantes - Timestamps}
+Las ventanas deslizantes requieren una noción de orden sobre el flujo de datos. Para ello, se recurre al uso de timestamps.
+\begin{block}{Timestamp Implícito}
+Se corresponden con el orden de llegada de los datos y suelen ser utilizadas cuando el momento exacto de tiempo asociado a una tupla no es importante, sino la consideración acerca de si es $reciente$ o $antiguo$.
+\end{block}
+
+\begin{block}{Timestamp Explícito}
+ Se definen explícitamente por cada elemento y suelen utilizarse cuando el momento exacto de la llegada de un dato es de importancia para el significado de la tupla. El gran inconveniente que presentan es que el timestamp asociado no necesariamente se corresponda con el orden de llegada de los datos.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Aproximación - Ventanas Deslizantes - Timestamps (Cont.)}
+Para asignar timestamps al resultado de una operación sobre dos flujos:
+\begin{itemize}
+\item No dar garantías sobre el orden de salida de los datos, sino simplemente en asumir que lo más probable es que las tuplas que arriban más temprano serán también aquellas en las que el operador actuará de manera más temprana.
+\item Explicitar como parte de la consulta qué timestamps asignarle a las tuplas del resultado, por ejemplo, priorizando los flujos y correspondiendole a cada resultado el timestamp del flujo más prioritario.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Aproximación - Procesamiento por lote,  muestreo y sinopsis}
+Supongamos que una consulta sobre un flujo de datos se responde usando una estructura de datos que puede ser mantenida incrementalmente. Dicha estructura tiene dos operaciones:
+\begin{itemize}
+\item actualizar$($tupla$)$: actualiza la estructura con una nueva tupla.
+\item computarRespuesta$()$: computa y produce o actualiza los resultados de la consulta.
+\end{itemize}
+Idealmente, ambas se pueden procesar rápidamente y proveen una respuesta en tiempo real. Pero...
+\end{frame}
+
+\begin{frame}
+\frametitle{Aproximación - Procesamiento por lote}
+\begin{itemize}
+\item actualizar$($tupla$)$ es rápida pero computarRespuesta$()$ no lo es.
+\item En vez de producir constantemente una respuesta actualizada, se actualizan las estructuras de datos a medida que llegan los datos, no se descarta ninguno, y se actualiza la respuesta periódicamente.
+\item La respuesta es aproximada en el sentido de que no refleja los últimos datos, aunque el resultado es exacto (para algún momento pasado). 
+\item Un algoritmo que tal vez no pueda mantener el ritmo de procesamiento cuando hay un pico en el flujo de datos tal vez sí pueda mantenerse estable lidiando con los datos haciendo uso de esta técnica.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Aproximación - Muestreo y Sinopsis}
+\textbf{Muestreo}
+\begin{itemize}
+\item computarRespuesta$()$ es rápida pero actualizar$($tupla$)$ es lenta.
+\item Resulta inútil hacer uso de todos los datos, puesto que arriban más rápido que lo que tardan en ser procesados.
+\item Se toma una muestra de los datos, ignorando completamente algunas tuplas y se genera una respuesta en base a los mismos.
+\item La respuesta es aproximada en el sentido de que no se tomaron en cuenta todos los datos de entrada.
+\item En muchos casos no es posible garantizar un error acotado.
+\end{itemize}
+\textbf{Sinopsis}
+\begin{itemize}
+\item Ambas operaciones son lentas.
+\item Se diseña una estructura de datos aproximada que mantiene una sinopsis o sketch de los datos en pos de una representación exacta.
+\item Minimiza el cómputo necesario por tupla.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Operadores Bloqueantes}
+\begin{itemize}
+\item Son aquellas operaciones que no pueden producir la primer tupla del resultado hasta que se hayan visto todos los datos.
+\begin{itemize}
+\item Operaciones de agregación.
+\item Operaciones de ordenamiento.
+\end{itemize}
+\item Suelen ser operaciones comunes y, por lo tanto, deseables en un sistema de administración de bases de datos que soporte este modelo.
+\item Sin embargo, los flujos de datos son potencialmente infinitos...
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Operadores Bloqueantes (Cont.)}
+\begin{itemize}
+\item Si la operación se encuentra en la raíz del árbol de ejecución:
+\begin{itemize}
+\item Devolver un flujo de datos que se va actualizando a medida que arriban datos nuevos del flujo si el resultado es pequeño.
+\item Mantener una estructura de datos si el resultado es grande.
+\end{itemize}
+\item Si la operación se encuentra en un nodo interno del árbol de ejecución:
+\begin{itemize}
+\item El problema es que los resultados de estos operadores varían conforme llegan nuevos datos.\\
+\item Propuesta 1: reemplazar las operaciones bloqueantes por otras no bloqueantes que sean análogas pero aproximadas (por ejemplo usar juggle para hacer un ordenamiento, ordenando localmente los datos de manera no bloqueante).
+\item Propuesta 2: aumentar el flujo de datos con aserciones sobre los datos por venir. Estas aserciones se llaman \textbf{punctuations} o puntuaciones y nos permiten tomar decisiones sobre los datos ya procesados.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Referencias a datos pasados}
+\begin{itemize}
+\item Una de las características del Data Stream Model es que una vez que un elemento ya pasó por el flujo, entones no necesariamente puede ser visitado nuevamente.
+\item Algunas consultas Ad-hoc no se podrían responder con exactitud dado que algunos datos ya han sido descartados.
+\item Una solución simple consiste en que las consultas Ad-hoc solamente referencien datos por venir.
+\item Una solución mas ambiciosa consiste en mantener un resumen de cada flujo de datos y así permitir consultas Ad-hoc que referencien a datos pasados y poder dar una mejor aproximación.
+\end{itemize}
+\end{frame}
+
+\subsection{STREAM - Stanford Stream Data Manager}
+
+\begin{frame}
+\frametitle{STREAM - Stanford Stream Data Manager}
+\begin{itemize}
+\item Diseñado e implementando en Stanford.
+\item Desarrollo de un sistema de administración de bases de datos basados en el Data Stream Model.
+\item Implementa mecanismos para realizar consultas continuas, técnicas de aproximación y estructuras de sinopsis.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{STREAM - Stanford Stream Data Manager (Cont.)}
+\begin{itemize}
+\item Utiliza una modificación de SQL como lenguaje de consulta:
+\begin{itemize}
+\item Se agregó la posibilidad referenciar flujos de datos en el FROM.
+\item Se extendió la declaratividad del lenguaje para indicar ventanas deslizantes. Se indica:
+\begin{itemize}
+\item especificación de la ventana encerrada en corchetes.
+\item una partición opcional de los datos en distintos grupos, mantenidos en distintas ventanas.
+\item tamaño de ventana, expresado en unidades físicas (como número de elementos) o en unidades lógicas (como el rango temporal de la ventana).
+\item predicado de filtro opcional.
+\end{itemize}
+\end{itemize} 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{STREAM - Stanford Stream Data Manager (Cont.)}
+Ejemplo de consulta en STREAM:\\
+\textit{Obtener el tiempo de duración promedio de una llamada considerando solamente las diez llamadas más recientes de larga distancia por usuario.} 
+
+\begin{verbatim}
+SELECT AVG(S.minutes)
+FROM Calls S [PARTITION BY S.customer id
+             ROWS 10 PRECEDING
+             WHERE S.type = ’Long Distance’]
+\end{verbatim}
+\begin{itemize}
+\item Cláusula RECENT : el sistema utiliza un orden propio para producir la ventana.
+\item Cláusula PRECEDING : se utiliza cuando la unidad de la ventana es lógica o física, y expresa que el ordenamiento debe seguir el orden dado por los timestamps.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{STREAM - Stanford Stream Data Manager (Cont.)}
+\begin{itemize}
+\item En STREAM, un plan de ejecución consiste de operadores conectados por colas. Además, cada operador puede mantener un estado intermedio haciendo uso de sinopsis en alguna estructura de datos, para calcular, por ejemplo, una ventana deslizante.
+\item La memoria del sistema se particiona dinámicamente entre las sinopsis y las colas de los planes de ejecución, al igual que para los buffers utilizados para manejar los flujos que arriban y un cache para los datos que se encuentran en disco.
+\item Un scheduler es el encargado de repartir el tiempo de ejecución entre los operadores. Durante la ejecución, un operador lee los datos de las colas de entrada, actualiza las estructuras de sinopsis que mantiene y escribe los resultados en sus colas de salida.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{STREAM - Stanford Stream Data Manager (Cont.)}
+\begin{itemize}
+\item Durante el ciclo de vida de una operación, muchos de los parámetros de la consulta como la característica del flujo, la tasa de datos o a cantidad de consultas que están corriendo de manera concurrente puede variar de manera considerable. Es por esta razón, que todos los operadores de STREAM son \textbf{adaptativos}.
+\item STREAM sólo encaró el problema de la adaptatividad en relación con la memoria disponible.
+\item En STREAM cada operador \textbf{maximiza la exactitud de su respuesta adaptándose a la cantidad de la memoria que tiene disponible para su uso} y maneja los cambios dinámicos que pueden surgir en el tamaño de su memoria En pocas palabras, a mayor memoria disponible, la aproximación del resultado será mejor.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bibliografía}
+\begin{itemize}
+\item \textbf{Models And Issues in Data Strean Systems}; Babcock, Babu, Datar, Motwani, Widom.
+\end{itemize}
+\end{frame}

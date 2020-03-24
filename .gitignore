@@ -1,0 +1,10 @@
+camino*/
+*~
+*.aux
+*.gz
+*.log
+*.nav
+*.pdf
+*.toc
+*.vrb
+*.snm

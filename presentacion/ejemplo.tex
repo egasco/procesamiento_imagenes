@@ -1,0 +1,20 @@
+\begin{frame}
+\frametitle{Introducción - Problema}
+\begin{itemize}
+\item Supongamos que un ISP desea analizar los datos acerca de los paquetes que circulan por la red en tiempo real.
+\item Por ejemplo, interesa analizar la frecuencia con la que llegan los paquetes de las distintas IPs para así, entre otras cosas, poder detectar y evitar ataques de Denial of Service. O quizá resulta relevante determinar si ciertos nodos de la red están saturados. 
+\item Queda claro que la información llega de forma constante y en grandes volúmenes de datos a la base de datos del sistema, puesto que constantemente están transitando numerosos paquetes por la red.
+\item No es estrictamente necesario obtener resultados exactos: basta con una aproximación. En efecto, se busca detectar patrones o comportamientos estadísticos más que hacer un análisis exhaustivo y exacto de los datos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Introducción - Problema (Cont.)}
+\begin{block}{Pregunta 1}
+¿Podríamos con un sistema de administración de base de datos tradicional realizar consultas para obtener los resultados deseados en tiempo real? ¿Por qué?
+\end{block}
+\begin{block}{Pregunta 2}
+¿Y con uno que modelara los datos como un flujo y permitiera consultas que computen el resultado a medida que los datos llegan?
+\end{block}
+\end{frame}
+

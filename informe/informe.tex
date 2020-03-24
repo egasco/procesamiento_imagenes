@@ -1,0 +1,70 @@
+\documentclass[a4paper,spanish]{article}
+
+%\usepackage[spanish]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{babel}
+\usepackage{tikz}
+\usetikzlibrary{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{comment}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{verbatim}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+
+
+\title{Practica Hough - Rectas - IPDI 2° C 2015}
+\author{Emilio Gasco}
+
+\begin{document}
+\maketitle
+
+%\begin{abstract}
+%\end{abstract}
+\renewcommand{\thesection}{Ejercicio \arabic{section}}
+\renewcommand{\thesubsection}{\alph{subsection}}
+\renewcommand{\thesubsubsection}{\roman{subsubsection}}
+\newcommand{\myss}[3]{
+    \begin{subfigure}[b]{#1\textwidth}
+        \includegraphics[width=\textwidth]{img/#2}
+        \caption{#3}
+        \label{fig:#2}
+    \end{subfigure}
+}
+
+\section{Ecualizacion + Hough + canny standard}
+
+* Dificil setear umbrales que que funcionen bien durante tood el video
+*  Lineas horizontales detectan innecesariamente.
+\begin{verbatim}
+max_frame=1431;
+
+for i=1:max_frame
+    fname = strcat('camino1/frame_',int2str(i),'.png');
+    im = imread(fname);
+    im=ecualizar_histograma(im);
+    [ nim,A,mix,borders  ] = ld_hough( im, 'canny',50,130,pi/180,100);
+    fname = strcat('output/camino1/frame_',int2str(i),'.png');
+    imwrite(nim,fname);
+    imshow(nim,[]);
+end
+\end{verbatim}
+
+
+\begin{tikzpicture}[y=-1cm]
+  \draw (0,2) -- (10,2) node[below] {$x$};
+  \draw[->] (0,0) -- (0,5) node[left] {$y$};
+  \draw[->] (5,0) -- (5,5) node[left] {$y'$};
+\end{tikzpicture}
+
+\begin{itemize}
+\item La probablilidad de que suma de gradiente tiende a seleccionar malos pares cuando el umbral de hough esta muy alejado del maximo. 
+\item Si la linea "mala" es de bajos votos, el echo que el umbral se calcule como 0.9 votos(linea) vuelve al algortimo inestable. 
+\end{itemize}
+
+
+
+\end{document}

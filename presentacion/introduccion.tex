@@ -1,0 +1,15 @@
+
+\begin{frame}
+\frametitle{Introducción}
+\begin{itemize}
+
+\item Recientemente, han surgido aplicaciones donde la información se modela mejor como un flujo de datos transitorio que como relaciones persistentes.
+\item A pesar de que los elementos de datos suelen ser tuplas relacionales, el hecho de que arriben en un flujo constante que no está acotado ni temporal ni espacialmente hace que los sistemas relaciones tradicionales no sean adecuados:
+\begin{itemize}
+\item No están optimizados para una carga rápida y constante de datos.
+\item No soportan nativamente consultas continuas. Es decir, consultas que vayan actualizando el resultado a medida que llegan nuevos datos.
+\item Están enfocadas en proveer consultas precisas mediante planes de consulta estables, pero cuando se quiere trabajar con flujos de datos no acotados suele ser necesario trabajar con aproximaciones y adapatarse a variaciones del flujo.
+\end{itemize}
+\end{itemize}
+\end{frame}
+

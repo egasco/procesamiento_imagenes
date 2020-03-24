@@ -1,0 +1,47 @@
+
+\begin{frame}
+\frametitle{Modelo de flujo de datos}
+\begin{block}{}
+El \textbf{data stream model}, o el modelo de flujo de datos, surge para modelar situaciones donde la información, a pesar de llegar como tuplas relacionales, no lo hace en sólo forma de relaciones persistentes (como en el modelo de datos relacional), sino que posee la característica de arribar de forma continua en múltiples flujos, veloces, variables en el tiempo, impredecibles y potencialmente no acotados.\
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modelo de flujo de datos (Cont.)}
+Los datos de entrada deben ser operados continuamente a medida que arriban. La información no está disponible para su acceso aleatorio en disco o memoria. Algunas diferencia con los DBMS tradicionales son:
+\begin{itemize}
+\item Los datos llegan por la red.
+\item No se tiene control sobre el orden en que llegan los datos, sobre todo cuando se procesan múltiples flujos de datos.
+\item Los flujos de datos son, en principio, de tamaño ilimitado.
+\item Una vez que un elemento del flujo es procesado, se descarta o se archiva, por lo que potencialmente el dato deja de estar disponible para futuras consultas.
+\end{itemize} 
+\end{frame}
+
+\begin{frame}
+\frametitle{Consultas One-Time vs. Consultas Continuas}
+
+\begin{block}{Consultas One-Time}
+Son aquellas que se utilizan en los sistemas de administración de bases de datos tradicionales. Se evalúan una única vez (en el sentido de que la consulta no persiste activa en el tiempo) sobre lo que podría considerarse un \textbf{snapshot} del conjunto de datos para un momento dado.
+\end{block}
+
+\begin{block}{Consultas Continuas}
+Son las que nos interesan en este modelo. No están soportadas en administradores tradicionales. Se ejecutan continuamente a lo largo del tiempo y actualizan su resultado, siempre teniendo el cuenta el flujo visto. Dadas las limitaciones en el manejo de flujo de datos, no suele requerirse que devuelvan un resultado exacto: una aproximación suele ser suficiente.
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Consultas Predefinidas vs. Consultas Ad-Hoc}
+\begin{block}{Consultas Predefinidas}
+Se diagraman y se informan al DSMS antes de la llegada de datos.
+\end{block}
+
+\begin{block}{Consultas Ad-Hoc}
+Se definen y ejecutan una vez iniciado el flujo de datos. Este tipo de consultas complica el diseño de los DSMS por que dificulta la optimización de la consulta y porque, en algunos casos, puede ser necesario referenciar datos ya descartados para responderla correctamente.
+\end{block}
+\end{frame}
+% \begin{frame}
+
+% Aca podemos agregar algun ejemplo( el que esta en el paper para bajar las cosas un poco  a tierra 
+
+% \end{frame}
